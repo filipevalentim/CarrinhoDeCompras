@@ -1,8 +1,17 @@
+using Microsoft.Extensions.Caching.Distributed;
+using System.Text.Json;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+// Configurando o Redis instanciado pelo Docker 127.0.0.1:6379
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+  options.Configuration = builder.Configuration.GetValue<string>("CacheSettings:ConnectionString");
+
+});
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
@@ -16,29 +25,29 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
+// Rota para adicionar carrinho no Redis
+app.MapPost("carrinhos", async (Carrinho carrinho, IDistributedCache redis) =>
 {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+  await redis.SetStringAsync(carrinho.UsuarioId, JsonSerializer.Serialize(carrinho));
+  return true;
+});
 
-app.MapGet("/weatherforecast", () =>
+// Rota para obter usuarioId do Redis
+app.MapGet("/carrinhos/{usuarioId}", async (string usuarioId, IDistributedCache redis) =>
 {
-  var forecast = Enumerable.Range(1, 5).Select(index =>
-      new WeatherForecast
-      (
-          DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-          Random.Shared.Next(-20, 55),
-          summaries[Random.Shared.Next(summaries.Length)]
-      ))
-      .ToArray();
-  return forecast;
-})
-.WithName("GetWeatherForecast")
-.WithOpenApi();
+  var data = await redis.GetStringAsync(usuarioId);
+
+  if (string.IsNullOrEmpty(data)) return null;
+
+  var carrinho = JsonSerializer.Deserialize<Carrinho>(data, new JsonSerializerOptions
+  {
+    PropertyNameCaseInsensitive = false
+  });
+  return carrinho;
+});
 
 app.Run();
 
-internal record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-  public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
+record Carrinho (string UsuarioId, List<Produto> Produtos);
+
+record Produto (string Nome, int Quantidade, decimal PrecoUnitario);
