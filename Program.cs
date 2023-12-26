@@ -39,7 +39,7 @@ namespace CarrinhoDeCompras
         return true;
       });
 
-      // Rota para obter usuarioId do Redisd
+      // Rota para obter usuarioId do Redis
       app.MapGet("/carrinhos/{usuarioId}", async (string usuarioId, IDistributedCache redis) =>
       {
         var data = await redis.GetStringAsync(usuarioId);
@@ -54,6 +54,12 @@ namespace CarrinhoDeCompras
           PropertyNameCaseInsensitive = false,
         });
         return carrinho;
+      });
+
+      // Rota para deleter usuarioId do Redis
+      app.MapDelete("carrinhos", async (string usuarioId, IDistributedCache redis) =>
+      {
+        await redis.RemoveAsync(usuarioId);
       });
 
       app.Run();
