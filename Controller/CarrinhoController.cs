@@ -15,10 +15,12 @@ public class CarrinhoController : ControllerBase
     private readonly CarrinhoService _carrinho;
 
     [HttpGet]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll(string key)
     {
-      var carrinhos = _carrinho.GetCarrinhos();
-      return Ok(carrinhos);
+      List<string> lista = new List<string>();
+      var carrinhos = _carrinho.GetCarrinhos(key);
+      lista.Add(carrinhos.ToString());
+      return Ok(lista);
     }
 
     [HttpGet("{id}")]
@@ -30,8 +32,8 @@ public class CarrinhoController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Set(Carrinho carrinho)
     {
-      _carrinho.SetCarrinho(carrinho);
-      return Ok();
+      await _carrinho.SetCarrinho(carrinho);
+      return Ok(carrinho);
     }
 
     [HttpDelete("{id}")]

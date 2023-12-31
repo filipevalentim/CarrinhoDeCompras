@@ -6,7 +6,7 @@ using Repository;
 public class CarrinhoService
   {
     private readonly ICacheRepository _redis;
-    private const string CACHE_COLLECTION_KEY = "*";
+    private const string CACHE_COLLECTION_KEY = "0";
 
     public CarrinhoService()
     {
@@ -28,9 +28,9 @@ public class CarrinhoService
       return carrinho;
     }
 
-    public async Task<IEnumerable<Carrinho>> GetCarrinhos()
+    public async Task<IEnumerable<Carrinho>> GetCarrinhos(string key)
     {
-      var carrinhos = await _redis.GetCollection<Carrinho>(CACHE_COLLECTION_KEY);
+      var carrinhos = await _redis.GetCollection<Carrinho>(key);
       // if (carrinhos is null || !carrinhos.Any())
       // {
       //   // var carrinho = await bancodedadosRepository.GetCarrinho(id);
