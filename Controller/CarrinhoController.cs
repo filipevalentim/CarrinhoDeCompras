@@ -4,45 +4,38 @@ using Entities;
 using Microsoft.AspNetCore.Mvc;
 using Services;
 
+[ApiController]
+[Route("api/[controller]/[action]")]
 public class CarrinhoController : ControllerBase
   {
-    public CarrinhoController()
-    {
-      
-    }
     public CarrinhoController(CarrinhoService carrinho)
     {
       _carrinho = carrinho;
     }
     private readonly CarrinhoService _carrinho;
 
-    [HttpGet("gets")]
-    [ApiExplorerSettings(IgnoreApi = true)]
-    public async Task<IActionResult> Get()
+    [HttpGet]
+    public async Task<IActionResult> GetAll()
     {
       var carrinhos = _carrinho.GetCarrinhos();
       return Ok(carrinhos);
     }
 
-    [HttpGet("/get")]
-    [Route("{id")]
-    [ApiExplorerSettings(IgnoreApi = true)]
-    public async Task<IActionResult> Get(Guid id)
+    [HttpGet("{id}")]
+    public async Task<IActionResult> Get([FromRoute] string id)
     {
       return Ok(await _carrinho.GetCarrinho(id));
     }
 
-    [HttpPost("/set")]
-    [ApiExplorerSettings(IgnoreApi = true)]
-    public async Task<IActionResult> Set(Guid id, Carrinho carrinho)
+    [HttpPost]
+    public async Task<IActionResult> Set(Carrinho carrinho)
     {
-      _carrinho.SetCarrinho(id, carrinho);
+      _carrinho.SetCarrinho(carrinho);
       return Ok();
     }
 
-    [HttpDelete("/delete")]
-    [ApiExplorerSettings(IgnoreApi = true)]
-    public async Task<IActionResult> Delete(Guid id)
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete([FromRoute] string id)
     {
       _carrinho.DeleteCarrinho(id);
       return Ok();

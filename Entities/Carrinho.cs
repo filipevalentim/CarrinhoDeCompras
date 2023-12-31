@@ -2,7 +2,7 @@
 {
     public class Carrinho
         {
-            public Guid UsuarioId { get; set; }
+            public string UsuarioId { get; set; }
             public List<Produto> Produtos { get; set; }
         }
 }

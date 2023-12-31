@@ -1,4 +1,7 @@
-﻿namespace CarrinhoDeCompras;
+﻿// <copyright file="Startup.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
+namespace CarrinhoDeCompras;
 
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.OpenApi.Models;
@@ -8,13 +11,20 @@ using Services;
 public interface IStartup
 {
     IConfiguration Configuration { get; }
+
     public void ConfigureServices(IServiceCollection service);
+
     public void Configure(WebApplication app, IWebHostEnvironment environment);
 }
+
 public class Startup : IStartup
 {
     public IConfiguration Configuration { get; }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Startup"/> class.
+    /// </summary>
+    /// <param name="configuration"></param>
     public Startup(IConfiguration configuration)
     {
         Configuration = configuration;
@@ -23,7 +33,7 @@ public class Startup : IStartup
     /// <inheritdoc/>
     public void ConfigureServices(IServiceCollection service)
     {
-        var endpoint = Configuration["Redis:Endpoint"];
+        // var endpoint = Configuration["Redis:Endpoint"];
         // var password = Configuration["Redis:Password"];
         service.AddEndpointsApiExplorer();
         service.AddScoped<ICacheRepository, RedisRepository>();
@@ -37,9 +47,9 @@ public class Startup : IStartup
             //                                {
             //                                    Password = password
             //                                };
-            options.ConfigurationOptions.EndPoints.Add(endpoint);
+            // options.ConfigurationOptions.EndPoints.Add(endpoint);
         });
-        service.AddSwaggerGen(swagger => swagger.SwaggerDoc("v1", new OpenApiInfo{Title = "Testando o Redis"}));
+        service.AddSwaggerGen();
     }
 
     /// <inheritdoc />
@@ -50,7 +60,7 @@ public class Startup : IStartup
             app.UseSwagger();
             app.UseSwaggerUI();
         }
-        
+
         app.UseHttpsRedirection();
 
         // app.MapPost("carrinhos",
