@@ -1,4 +1,8 @@
 ﻿namespace CarrinhoDeCompras.Entities
 {
-    record Carrinho(string UsuarioId, List<Produto> Produtos);
+    public class Carrinho
+        {
+            public Guid UsuarioId { get; set; }
+            public List<Produto> Produtos { get; set; }
+        }
 }

@@ -1,4 +1,10 @@
 ﻿namespace CarrinhoDeCompras.Entities
-{
-  record Produto(string Nome, int Quantidade, decimal PrecoUnitario);
-}
+  {
+    public class Produto
+      {
+        public String Nome { get; set; }
+        public Int32 Quantidade { get; set; }
+        public Decimal PrecoUnitario { get; set; }
+        
+      }
+  }
